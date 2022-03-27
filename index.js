@@ -6,8 +6,18 @@ Alpine.data('appData', () => ({
     maxHour: 24,
     minHour: 0,
   },
+  messagesList: [],
+  filteredMessagesList: [],
 
   init() {
+    let msgData = this.$el.querySelectorAll('.js_bd_data');
+    let msgList = [];
+
+    for (let msg of msgData) {
+      msgList.push(msg.innerText);
+    }
+    this.messagesList = msgList;
+
     let savedState = localStorage.getItem('filer-app-state');
     if (savedState) {
       try {
@@ -18,7 +28,9 @@ Alpine.data('appData', () => ({
       }
     }
 
-    this.$watch('state', this.saveState.bind(this));
+    this.filteredMessagesList = this.getFilteredMessages();
+
+    this.$watch('state', this.handleStateUpdate.bind(this));
   },
 
   handleAddFilter(filterInput) {
@@ -41,13 +53,8 @@ Alpine.data('appData', () => ({
     return ('0' + val).slice(-2);
   },
 
-  saveState() {
-    localStorage.setItem('filer-app-state', JSON.stringify(this.state));
-  },
-
-  updateVisibility(element, textElement, state) {
-    this.$nextTick(() => {
-      let text = textElement.innerText;
+  getFilteredMessages() {
+    return this.messagesList.filter((text) => {
       let isHidden = false;
 
       isHidden = this.state.filters.some((x) => {
@@ -57,11 +64,23 @@ Alpine.data('appData', () => ({
         return false;
       });
 
-      if (isHidden) {
-        element.style.display = 'none';
-      } else {
-        element.style.display = 'block';
+      let hour = text.match(/2022 (\d{2})/)[1];
+
+      if (hour && Number(hour) > this.state.maxHour) {
+        isHidden = true;
       }
+      
+      if (hour && Number(hour) < this.state.minHour) {
+        isHidden = true;
+      }
+
+      return !isHidden;
     });
+  },
+
+  handleStateUpdate() {
+    this.filteredMessagesList = this.getFilteredMessages();
+
+    localStorage.setItem('filer-app-state', JSON.stringify(this.state));
   },
 }));
