@@ -1,0 +1,37 @@
+<div x-data="appData" class="app">
+  <form @submit.prevent="handleAddFilter($refs.filerInput)">
+    <input required type="text" x-ref="filerInput" />
+    <button>Add</button>
+  </form>
+
+  <div class="filter-wrapper">
+    <template x-for="(filter, index) in state.filters">
+      <div>
+        <span x-text="filter"></span>
+        <button @click="removeFilter(index)">x</button>
+      </div>
+    </template>
+  </div>
+
+  <div>
+    Min Hour: <span x-text="padNumber(state.minHour)"></span>
+    <input type="range" min="0" max="24" x-model="state.minHour" />
+  </div>
+
+  <div>
+    Max Hour: <span x-text="padNumber(state.maxHour)"></span>
+    <input type="range" min="0" max="24" x-model="state.maxHour" />
+  </div>
+
+  <div>
+    <div
+      x-init="updateVisibility($el, $refs.text); $watch('state', () => updateVisibility($el, $refs.text))"
+    >
+      <span x-ref="text">
+        Some text here
+        <span>1</span>
+        <span x-text="new Date()"></span>
+      </span>
+    </div>
+  </div>
+</div>
