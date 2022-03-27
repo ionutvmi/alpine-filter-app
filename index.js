@@ -5,7 +5,7 @@ Alpine.data('appData', () => ({
     filters: [],
     maxHour: 24,
     minHour: 0,
-    datePattern: '2022-07-02  (\\d+)',
+    datePattern: '2022-07-02 (\\d+)',
   },
   messagesText: `2022-07-02 04:52:39 DEBUG HelloExample:19 - This is debug : don't worry, be happy
 2022-07-02 10:52:39 INFO  HelloExample:23 - This is info : don't worry, be happy
