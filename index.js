@@ -5,19 +5,42 @@ Alpine.data('appData', () => ({
     filters: [],
     maxHour: 24,
     minHour: 0,
+    datePattern: '2022 (\\d{2})',
   },
-  messagesList: [],
-  filteredMessagesList: [],
+  messagesText: 'Initial data row 1\nInitial data row 2',
+
+  get messagesList() {
+    return this.messagesText.split('\n');
+  },
+  get filteredMessagesList() {
+    let hourRegex = new RegExp(this.state.datePattern, 'g');
+
+    return this.messagesList.filter((text) => {
+      let isHidden = false;
+
+      isHidden = this.state.filters.some((x) => {
+        if (text.indexOf(x) > -1) {
+          return true;
+        }
+        return false;
+      });
+
+      let hourMatch = text.match(hourRegex);
+      let hour = hourMatch && hourMatch[1];
+
+      if (hour && Number(hour) > this.state.maxHour) {
+        isHidden = true;
+      }
+
+      if (hour && Number(hour) < this.state.minHour) {
+        isHidden = true;
+      }
+
+      return !isHidden;
+    });
+  },
 
   init() {
-    let msgData = this.$el.querySelectorAll('.js_bd_data');
-    let msgList = [];
-
-    for (let msg of msgData) {
-      msgList.push(msg.innerText);
-    }
-    this.messagesList = msgList;
-
     let savedState = localStorage.getItem('filer-app-state');
     if (savedState) {
       try {
@@ -27,8 +50,6 @@ Alpine.data('appData', () => ({
         console.error(e);
       }
     }
-
-    this.filteredMessagesList = this.getFilteredMessages();
 
     this.$watch('state', this.handleStateUpdate.bind(this));
   },
@@ -53,34 +74,7 @@ Alpine.data('appData', () => ({
     return ('0' + val).slice(-2);
   },
 
-  getFilteredMessages() {
-    return this.messagesList.filter((text) => {
-      let isHidden = false;
-
-      isHidden = this.state.filters.some((x) => {
-        if (text.indexOf(x) > -1) {
-          return true;
-        }
-        return false;
-      });
-
-      let hour = text.match(/2022 (\d{2})/)[1];
-
-      if (hour && Number(hour) > this.state.maxHour) {
-        isHidden = true;
-      }
-      
-      if (hour && Number(hour) < this.state.minHour) {
-        isHidden = true;
-      }
-
-      return !isHidden;
-    });
-  },
-
   handleStateUpdate() {
-    this.filteredMessagesList = this.getFilteredMessages();
-
     localStorage.setItem('filer-app-state', JSON.stringify(this.state));
   },
 }));
