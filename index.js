@@ -5,16 +5,27 @@ Alpine.data('appData', () => ({
     filters: [],
     maxHour: 24,
     minHour: 0,
-    datePattern: '2022 (\\d{2})',
+    datePattern: '2022-07-02  (\\d+)',
   },
-  messagesText: 'Initial data row 1\nInitial data row 2',
+  messagesText: `2022-07-02 04:52:39 DEBUG HelloExample:19 - This is debug : don't worry, be happy
+2022-07-02 10:52:39 INFO  HelloExample:23 - This is info : don't worry, be happy
+2022-07-02 18:52:39 WARN  HelloExample:26 - This is warn : don't worry, be happy
+2022-07-02 22:52:39 ERROR HelloExample:27 - This is error : don't worry, be happy
+2022-07-02 23:52:39 FATAL HelloExample:28 - This is fatal : don't worry, be happy`,
+  hasRegexError: false,
 
   get messagesList() {
     return this.messagesText.split('\n');
   },
   get filteredMessagesList() {
-    let hourRegex = new RegExp(this.state.datePattern, 'g');
-
+    let hourRegex = null;
+    try {
+      hourRegex = new RegExp(this.state.datePattern, '');
+      this.hasRegexError = false;
+    } catch (e) {
+      console.error(e);
+      this.hasRegexError = true;
+    }
     return this.messagesList.filter((text) => {
       let isHidden = false;
 
@@ -27,6 +38,7 @@ Alpine.data('appData', () => ({
 
       let hourMatch = text.match(hourRegex);
       let hour = hourMatch && hourMatch[1];
+      console.log(hourMatch);
 
       if (hour && Number(hour) > this.state.maxHour) {
         isHidden = true;
