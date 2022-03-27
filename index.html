@@ -1,44 +1,108 @@
-<div x-data="appData" class="app">
-  <form @submit.prevent="handleAddFilter($refs.filerInput)">
-    <input required type="text" x-ref="filerInput" />
-    <button>Add</button>
-  </form>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Filter log messages</title>
+    <link
+      href="https://unpkg.com/tailwindcss@^2.0/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="container m-auto">
+    <h1 class="text-center mt-4 text-4xl uppercase">Filter log messages</h1>
+    <p class="text-center p-4">
+      Small utility that can be used for filtering log messages.
+    </p>
 
-  <div class="filter-wrapper">
-    <template x-for="(filter, index) in state.filters">
-      <div>
-        <span x-text="filter"></span>
-        <button @click="removeFilter(index)">x</button>
+    <div x-data="appData" class="app">
+      <form
+        class="flex my-2"
+        @submit.prevent="handleAddFilter($refs.filerInput)"
+      >
+        <input
+          class="w-10/12 p-2 mr-2 border-2 border-blue-400"
+          placeholder="exclude filter value"
+          required
+          type="text"
+          x-ref="filerInput"
+        />
+        <button class="w-2/12 p-2 border-2 bg-blue-300 border-blue-400">
+          Add
+        </button>
+      </form>
+
+      <div class="flex flex-wrap justify-center">
+        <template x-for="(filter, index) in state.filters">
+          <div class="flex m-2">
+            <span
+              class="
+                bg-blue-300
+                p-2
+                max-w-prose
+                overflow-ellipsis overflow-hidden
+              "
+              x-text="filter"
+            ></span>
+            <button
+              class="bg-red-500 text-white p-2"
+              @click.prevent="removeFilter(index)"
+            >
+              x
+            </button>
+          </div>
+        </template>
       </div>
-    </template>
-  </div>
 
-  <div>
-    Min Hour: <span x-text="padNumber(state.minHour)"></span>
-    <input type="range" min="0" max="24" x-model="state.minHour" />
-  </div>
+      <div>
+        Min Hour: <span x-text="padNumber(state.minHour)"></span>
+        <input
+          class="w-9/12"
+          type="range"
+          min="0"
+          max="24"
+          x-model="state.minHour"
+        />
+      </div>
 
-  <div>
-    Max Hour: <span x-text="padNumber(state.maxHour)"></span>
-    <input type="range" min="0" max="24" x-model="state.maxHour" />
-  </div>
+      <div>
+        Max Hour: <span x-text="padNumber(state.maxHour)"></span>
+        <input
+          class="w-9/12"
+          type="range"
+          min="0"
+          max="24"
+          x-model="state.maxHour"
+        />
+      </div>
 
-  <template x-for="msg in filteredMessagesList">
-    <div x-text="msg"></div>
-  </template>
+      <hr class="my-4" />
 
-  <hr />
-  <label>
-    Data to filter:
-    <textarea
-      rows="20"
-      placeholder="Initial data"
-      x-model="messagesText"
-      style="width: 100%"
-    ></textarea>
-  <label>
-  <label>
-    Hour regex pattern:
-    <input type="text" x-model="state.datePattern" />
-  </label>
-</div>
+      <h2 class="text-2xl">Result</h2>
+      <template x-for="msg in filteredMessagesList">
+        <div x-text="msg"></div>
+      </template>
+
+      <hr class="my-4" />
+      <label class="w-full block my-4">
+        Data to filter:
+        <textarea
+          class="w-full p-2 border-2 border-blue-400"
+          rows="20"
+          placeholder="Initial data"
+          x-model="messagesText"
+        ></textarea>
+      </label>
+      <label class="w-full block my-4">
+        Hour regex pattern:
+        <input
+          class="p-2 border-2 border-blue-400"
+          type="text"
+          x-model="state.datePattern"
+        />
+        (hour will be match[1])
+      </label>
+    </div>
+  </body>
+</html>
